@@ -1,0 +1,156 @@
+{% extends "base/main.html" %}
+{% block content %}
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lobby</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: "Poppins", sans-serif;
+            background-color: rgba(232, 233, 239, 1);
+        }
+
+        #welcome-message {
+            text-align: center;
+            margin: 20px;
+        }
+
+        #welcome-message h1 {
+            font-size: 36px;
+        }
+
+        #welcome-message p {
+            font-size: 18px;
+        }
+
+        #input {
+            width: 300px;
+            padding: 10px;
+            border: 1px solid rgb(144, 144, 144);
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        #btn-submit {
+            padding: 10px;
+            background-color: rgb(96, 96, 255);
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #form {
+            text-align: center;
+        }
+
+        :root {
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+                0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        body {
+            font-family: "Poppins", sans-serif;
+            background-color: rgba(232, 233, 239, 1);
+        }
+
+        /* LOBBY STYLING */
+
+        #logo {
+            display: block;
+            width: 100px;
+            margin: 0 auto;
+        }
+
+        #form-container {
+            width: 500px;
+            box-shadow: var(--shadow);
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 5px;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            height: auto;
+        }
+
+        @media screen and (max-width: 450px) {
+            #form-container {
+                width: 95%;
+            }
+
+            #welcome-message {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+        <section id="form-container">
+            <img src="{% static 'img/chat-icon.png' %}" alt="" id="logo">
+
+            <div id="welcome-message">
+                <h1>Welcome to MyChat</h1>
+                <p>A group video calling application.</p>
+            </div>
+
+            <form action="" id="form">
+                {% csrf_token %}
+                <div class="form-field">
+                    <input type="text" name="room" id="input" placeholder="Enter or Create a room"
+                        style="text-transform: uppercase;">
+                </div>
+
+                <div class="form-field">
+                    <input type="text" name="username" id="input" placeholder="Enter your name"
+                        style="text-transform: uppercase;">
+                </div>
+
+                <div class="form-field">
+                    <input type="submit" name="" id="btn-submit" value="Join Stream">
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <script>
+        let form = document.getElementById('form');
+
+        let handleSubmit = async (e) => {
+            e.preventDefault();
+            let room = e.target.room.value.toUpperCase();
+            let name = e.target.username.value.toUpperCase();
+
+            let response = await fetch(`/get_token/?channel=${room}`);
+
+            let data = await response.json();
+
+            let UID = data.uid;
+            let token = data.token;
+
+            sessionStorage.setItem('UID', UID)
+            sessionStorage.setItem('token', token)
+            sessionStorage.setItem('room', room)
+            sessionStorage.setItem('name', name)
+
+            window.open('/room/', '_self')
+        }
+
+        form.addEventListener('submit', handleSubmit);
+    </script>
+</body>
+
+</html>
+{% endblock content %}
